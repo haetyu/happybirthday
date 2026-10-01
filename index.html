@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>바른집 부동산꺼</title>
+  <meta name="description" content="바른집 부동산의 화이트보드">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect x='3' y='3' width='34' height='34' rx='4' fill='white' stroke='%23989ea2' stroke-width='3'/%3E%3Cpath d='M11 21L20 13L29 21M14 19V29H26V19' fill='none' stroke='%23292d30' stroke-width='3'/%3E%3C/svg%3E">
+  <style>
+    :root { color-scheme: light; --ink: #252a2e; --wall: #e5e8e9; }
+    * { box-sizing: border-box; }
+    html { min-height: 100%; background: var(--wall); }
+    body { margin: 0; padding: clamp(20px, 4.5vw, 72px); color: var(--ink); }
+    .frame {
+      position: relative;
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: clamp(9px, 1vw, 14px);
+      border: 1px solid #a2a8ac;
+      border-radius: 13px;
+      background: linear-gradient(125deg, #d2d7da 0%, #f9fafb 13%, #b9c0c5 47%, #e5e9ec 72%, #a9b0b5 100%);
+      box-shadow: 0 25px 45px -24px #313c475e, 0 3px 6px #3a42432b, inset 0 1px 1px #fff;
+    }
+    .board {
+      position: relative;
+      min-height: min(820px, calc(100svh - 120px));
+      border: 1px solid #a7afb2;
+      border-radius: 4px;
+      padding: clamp(34px, 6vw, 82px) clamp(20px, 5vw, 76px);
+      background:
+        radial-gradient(ellipse at 20% 5%, #ffffff 0%, #ffffff00 55%),
+        linear-gradient(116deg, #f6f8f7 0%, #fff 45%, #f5f7f6 100%);
+      box-shadow: inset 0 2px 7px #22303e13;
+    }
+    .heading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: clamp(10px, 2.1vw, 30px);
+      width: fit-content;
+      max-width: 100%;
+      margin: 0 auto;
+      transform: rotate(-1.5deg);
+    }
+    h1 {
+      position: relative;
+      margin: 0;
+      font-family: 'Gaegu', 'Nanum Pen Script', 'Malgun Gothic', cursive;
+      font-size: clamp(35px, 6.5vw, 94px);
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -.065em;
+      word-break: keep-all;
+      text-shadow: .5px .3px 0 currentColor;
+    }
+    h1::after {
+      content: '';
+      position: absolute;
+      left: 2%; right: 0; bottom: -15px;
+      height: 5px;
+      border-radius: 70% 25% 60% 35%;
+      background: #315e98;
+      opacity: .88;
+      transform: rotate(.7deg);
+    }
+    .peace {
+      display: block;
+      flex-shrink: 0;
+      font-family: 'DejaVu Sans', 'Segoe UI Symbol', 'Arial Unicode MS', sans-serif;
+      font-variant-emoji: text;
+      font-size: clamp(57px, 8.5vw, 119px);
+      font-weight: 400;
+      line-height: 1;
+      transform: rotate(12deg);
+    }
+    .board-columns { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(36px, 5vw, 72px); margin-top: 76px; align-items: start; }
+    .office-board, .content { min-width: 0; }
+    .office-board { position: relative; font: 700 22px/1.5 'Gaegu', sans-serif; }
+    .office-board::after { content: ''; position: absolute; top: 0; bottom: 0; right: calc(clamp(36px, 5vw, 72px) / -2); border-right: 2px dashed #a7afb259; transform: rotate(.3deg); }
+    .office-title { margin: 0 0 18px; padding: 10px 14px; background: #edf1f4; border-left: 5px solid #354d58; font-size: 26px; line-height: 1.3; }
+    .duties { list-style: none; margin: 0 0 28px; padding: 0; }
+    .duties li { position: relative; padding-left: 22px; margin: 10px 0; overflow-wrap: anywhere; }
+    .duties li::before { content: '▫'; position: absolute; left: 0; top: 0; }
+    .duties strong { white-space: nowrap; }
+    .done { color: #328466; }
+    .overdue { color: #a44037; }
+    .caution { color: #946521; }
+    .safety { border: 3px solid #a94135; border-radius: 6px 8px 5px 7px; padding: 19px 20px; background: #fff8f84a; }
+    .safety h3 { margin: 0; font-size: 25px; color: #a94135; }
+    .day-count { text-align: center; margin: 10px 0 0; color: #ad392c; font: 700 70px/1.15 'Gaegu', sans-serif; }
+    .day-caption { text-align: center; color: #687170; font-size: 19px; margin: 4px 0 20px; }
+    .record-list { border-top: 1px dotted #bca9a6; margin: 0; padding: 14px 0 0; list-style: none; }
+    .record-list li { margin: 6px 0; }
+    .record-list mark { background: #e5eff2; color: inherit; padding: 0 4px; }
+    .pantry { margin: 28px 0; padding: 22px 24px; background: #fff8ad; box-shadow: 2px 7px 9px -5px #24313e38; transform: rotate(-1.3deg); }
+    .pantry h3 { font-size: 25px; margin: 0 0 8px; }
+    .pantry ul { list-style: none; margin: 0; padding: 0; }
+    .pantry li { margin: 5px 0; }
+    .marker-stock { padding: 12px 14px; border: 1px dotted #acb3b6; color: #687170; font-size: 20px; }
+    .content { min-height: 650px; padding-top: 0; }
+    .birthday-title { font: 700 30px/1.3 'Gaegu', sans-serif; margin: 0 0 10px; }
+    button, textarea { font: inherit; }
+    button { cursor: pointer; }
+    button:disabled { opacity: .55; cursor: not-allowed; }
+    :focus-visible { outline: 3px solid #315e98; outline-offset: 5px; }
+    .toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 30px; }
+    .toolbar p { margin: 0; font: 700 24px 'Gaegu', cursive; }
+    .write-button, .submit-button { border: 2px solid #252a2e; border-radius: 7px 3px 8px 4px; padding: 12px 20px; background: #252a2e; color: white; font: 700 21px 'Gaegu', sans-serif; }
+    .write-button:hover, .submit-button:hover { background: #3d4850; }
+    .status { font: 14px/1.7 system-ui, sans-serif; color: #53616b; margin: 16px 0; }
+    .notes { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 185px), 1fr)); gap: 24px; padding: 12px 4px 35px; }
+    .note { --paper: #fff09a; position: relative; min-height: 230px; padding: 38px 25px 24px; background: linear-gradient(#ffffff18, #ffffff00 45%), var(--paper); box-shadow: 2px 8px 9px -5px #24313e38; transform: rotate(var(--tilt, -1.3deg)); }
+    .note::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 25px; background: #ffffff22; border-bottom: 1px solid #00000004; }
+    .note[data-color="yellow"] { --paper: #fff09a; }
+    .note[data-color="pink"] { --paper: #ffd0df; }
+    .note[data-color="blue"] { --paper: #c6eafa; }
+    .note[data-color="orange"] { --paper: #ffdab5; }
+    .note p { font: 700 25px/1.45 'Gaegu', sans-serif; white-space: pre-wrap; overflow-wrap: anywhere; margin: 0 0 24px; }
+    .note footer { font: 700 18px 'Gaegu', sans-serif; text-align: right; opacity: .7; }
+    .empty { text-align: center; padding: 80px 10px; color: #697780; font: 700 25px/1.7 'Gaegu', sans-serif; }
+    dialog { width: min(470px, calc(100% - 32px)); max-height: calc(100svh - 40px); overflow-y: auto; border: 0; border-radius: 12px; padding: 26px; color: var(--ink); background: #fff; box-shadow: 0 24px 90px #0004; }
+    dialog::backdrop { background: #29344165; backdrop-filter: blur(3px); }
+    .dialog-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .dialog-header h2 { font: 700 29px 'Gaegu', sans-serif; margin: 0; }
+    .close { border: 0; background: transparent; font-size: 29px; padding: 5px 10px; }
+    .hint { font: 14px/1.6 system-ui, sans-serif; color: #59646e; }
+    fieldset { border: 0; padding: 0; margin: 22px 0; }
+    legend { font: 14px system-ui, sans-serif; margin-bottom: 12px; }
+    .colors { display: flex; gap: 10px; flex-wrap: wrap; }
+    .color-option { position: relative; cursor: pointer; }
+    .color-option input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+    .color-option span { display: block; padding: 10px 13px; border: 2px solid transparent; border-radius: 6px; font: 14px system-ui, sans-serif; background: var(--swatch); }
+    .color-option input:checked + span { border-color: #252a2e; box-shadow: inset 0 0 0 2px white; }
+    .color-option input:focus-visible + span { outline: 3px solid #315e98; outline-offset: 3px; }
+    .draft { transform: none; min-height: 230px; }
+    .draft label { display: block; font: 700 18px 'Gaegu', sans-serif; margin-bottom: 10px; }
+    textarea { width: 100%; min-height: 150px; resize: vertical; border: 0; background: transparent; color: var(--ink); font: 700 25px/1.45 'Gaegu', sans-serif; }
+    textarea::placeholder { color: #62645c; opacity: 1; }
+    .counter { font: 13px system-ui, sans-serif; text-align: right; margin-top: 8px; }
+    .submit-button { width: 100%; margin-top: 20px; }
+    .form-status { font: 14px/1.6 system-ui, sans-serif; color: #954021; }
+    [hidden] { display: none !important; }
+    .rail {
+      position: absolute;
+      bottom: -10px;
+      left: 10%; right: 10%; height: 15px;
+      border: 1px solid #a8afb5;
+      border-radius: 2px 2px 6px 6px;
+      background: linear-gradient(#e4e8eb, #f8fafb 35%, #aeb6bd 42%, #c6cdd2);
+      box-shadow: 0 7px 9px #29364120;
+    }
+    @media (max-width: 850px) {
+      .board-columns { grid-template-columns: minmax(0, 1fr); gap: 42px; margin-top: 60px; }
+      .office-board::after { display: none; }
+      .content { border-top: 2px dashed #a7afb259; padding-top: 30px; min-height: 420px; }
+    }
+    @media (max-width: 600px) {
+      body { padding: 24px 14px 34px; }
+      .board { min-height: calc(100svh - 78px); padding: 48px 17px 34px; }
+      .heading { gap: 8px; }
+      h1 { font-size: clamp(30px, 7.1vw, 43px); letter-spacing: -.075em; }
+      .peace { font-size: clamp(44px, 11vw, 65px); }
+      h1::after { bottom: -11px; height: 4px; }
+      .content { min-height: 420px; }
+    }
+    @media print {
+      body { padding: 0; background: white; }
+      .frame { box-shadow: none; }
+      .board { min-height: 90vh; }
+    }
+  </style>
+</head>
+<body>
+  <main class="frame" aria-label="바른집 부동산 화이트보드">
+    <div class="board">
+      <header class="heading">
+        <h1>바른집 부동산꺼</h1>
+        <span class="peace" aria-hidden="true">&#x270C;&#xFE0E;</span>
+      </header>
+      <div class="board-columns">
+      <!-- 왼쪽 공지: 아래 문구와 수치를 수정하면 보드에 반영됩니다. -->
+      <aside class="office-board" aria-labelledby="office-title">
+        <h2 class="office-title" id="office-title">② 금일 내근 분장</h2>
+        <ul class="duties">
+          <li>화분 급수 (총 7개) … <strong>서원우</strong> <span class="done">✔ 완료</span></li>
+          <li>파쇄기 수거함 비우기 … <strong>서원우</strong> <span class="overdue">✘ 미이행 (3일째)</span></li>
+          <li>전단 교체 / 유리창 청소 … <strong>백우수</strong> <span class="done">✔ 완료</span></li>
+          <li>현장 점검표 디지털 변환 … <strong>000</strong> <span class="done">✔ 18시 이전 업로드</span></li>
+        </ul>
+        <section class="safety" aria-labelledby="safety-title">
+          <h3 id="safety-title">◆ 무사고 운영 기록</h3>
+          <p class="day-count">D+5</p>
+          <p class="day-caption">(돌발 상황 무피해 연속 일수)</p>
+          <ul class="record-list">
+            <li>· 차단 성공률 … <strong>100.0%</strong></li>
+            <li>· 금주 대응 건수 … <strong>11건</strong></li>
+            <li>· 비품 손실 … 의자 1, 휴지통 1</li>
+            <li>· 은퇴 잔여일 … <mark>7,635일</mark></li>
+          </ul>
+        </section>
+        <section class="pantry" aria-labelledby="pantry-title">
+          <h3 id="pantry-title">[탕비실 공지]</h3>
+          <ul>
+            <li>· 몽펭쉐리 빵 상시 입고 중</li>
+            <li>· 프랑스산 버터 / 딸기잼 비치</li>
+            <li>· 1인 2개 초과 반출 금지 — 백</li>
+          </ul>
+        </section>
+        <div class="marker-stock">보드마카 잔량 │ 흑 <span class="done">양호</span> · 적 <span class="caution">보통</span> · 청 <span class="overdue">교체요망</span></div>
+      </aside>
+      <section class="content" aria-labelledby="birthday-title">
+        <h2 class="birthday-title" id="birthday-title">생일 축하 메시지</h2>
+        <div class="toolbar">
+          <p>생일 축하 한마디, 붙이고 가세요!</p>
+          <button class="write-button" id="open-note" type="button">＋ 포스트잇 붙이기</button>
+        </div>
+        <p class="status" id="board-status" role="status"></p>
+        <div class="notes" id="notes"></div>
+        <p class="empty" id="empty" hidden>아직 붙은 포스트잇이 없어요.<br>첫 번째 축하를 남겨주세요!</p>
+        <button type="button" id="load-more" class="write-button" hidden>메시지 더 보기</button>
+      </section>
+      </div>
+    </div>
+    <div class="rail" aria-hidden="true"></div>
+  </main>
+  <dialog id="composer" aria-labelledby="composer-title">
+    <div class="dialog-header">
+      <h2 id="composer-title">마음을 담은 포스트잇</h2>
+      <button type="button" class="close" id="close-note" aria-label="닫기">×</button>
+    </div>
+    <p class="hint">이름 없이, 축하하는 마음만 남겨주세요.</p>
+    <form id="note-form">
+      <fieldset>
+        <legend>포스트잇 색상</legend>
+        <div class="colors">
+          <label class="color-option"><input type="radio" name="color" value="yellow" checked><span style="--swatch:#fff09a">노란색</span></label>
+          <label class="color-option"><input type="radio" name="color" value="pink"><span style="--swatch:#ffd0df">핑크색</span></label>
+          <label class="color-option"><input type="radio" name="color" value="blue"><span style="--swatch:#c6eafa">하늘색</span></label>
+          <label class="color-option"><input type="radio" name="color" value="orange"><span style="--swatch:#ffdab5">연한 주황색</span></label>
+        </div>
+      </fieldset>
+      <div class="note draft" id="draft" data-color="yellow">
+        <label for="message">생일 축하 메시지</label>
+        <textarea id="message" name="message" maxlength="300" required placeholder="생일 축하해! 오늘 하루도 행복하길 :)" aria-describedby="counter"></textarea>
+        <div class="counter" id="counter">0 / 300</div>
+      </div>
+      <p class="form-status" id="form-status" role="status"></p>
+      <button class="submit-button" id="submit-note" type="submit">보드에 붙이기</button>
+    </form>
+  </dialog>
+  <script>
+    // Supabase 프로젝트의 공개 설정만 입력하세요. secret/service_role 키는 넣지 마세요.
+    const BOARD_CONFIG = { url: 'https://srjopnvkbilpqkimaexo.supabase.co', publishableKey: 'sb_publishable_8cTQ5iOSpegEWoDhWJCpwQ__0meAvRd' };
+    const $ = (id) => document.getElementById(id);
+    const colors = new Set(['yellow', 'pink', 'blue', 'orange']);
+    const configured = /^https:\/\//.test(BOARD_CONFIG.url) && BOARD_CONFIG.publishableKey.startsWith('sb_publishable_');
+    let sending = false;
+    let loading = false;
+    let visibleLimit = 60;
+    let pendingPost = null;
+    const dialog = $('composer');
+    const form = $('note-form');
+    const status = $('board-status');
+
+    $('open-note').addEventListener('click', () => {
+      dialog.showModal();
+      $('message').focus();
+    });
+    $('close-note').addEventListener('click', () => dialog.close());
+    form.addEventListener('change', () => { $('draft').dataset.color = form.elements.color.value; });
+    $('message').addEventListener('input', () => {
+      $('counter').textContent = `${$('message').value.length} / 300`;
+      $('message').setCustomValidity('');
+    });
+
+    async function request(path, options = {}) {
+      const response = await fetch(BOARD_CONFIG.url.replace(/\/$/, '') + '/rest/v1/birthday_notes' + path, {
+        ...options,
+        headers: { apikey: BOARD_CONFIG.publishableKey, 'Content-Type': 'application/json', ...options.headers },
+        signal: AbortSignal.timeout(15000)
+      });
+      if (!response.ok) throw new Error(String(response.status));
+      const body = await response.text();
+      return body ? JSON.parse(body) : null;
+    }
+
+    function renderNotes(rows) {
+      const fragment = document.createDocumentFragment();
+      rows.forEach((row, index) => {
+        const card = document.createElement('article');
+        card.className = 'note';
+        card.dataset.color = colors.has(row.color) ? row.color : 'yellow';
+        card.style.setProperty('--tilt', [-1.5, 1.2, -.7, 1.8, -.9][index % 5] + 'deg');
+        const text = document.createElement('p');
+        text.textContent = row.message;
+        const footer = document.createElement('footer');
+        footer.textContent = '익명의 축하';
+        card.append(text, footer);
+        fragment.append(card);
+      });
+      $('notes').replaceChildren(fragment);
+      $('empty').hidden = rows.length !== 0;
+    }
+
+    async function loadNotes() {
+      if (!configured || loading) return;
+      loading = true;
+      try {
+        const rows = await request(`?select=id,message,color,created_at&order=created_at.desc,id.desc&limit=${visibleLimit + 1}`);
+        if (!Array.isArray(rows)) throw new Error('invalid response');
+        renderNotes(rows.slice(0, visibleLimit));
+        $('load-more').hidden = rows.length <= visibleLimit;
+        status.textContent = '';
+      } catch {
+        status.textContent = '메시지를 불러오지 못했어요. 잠시 후 자동으로 다시 불러올게요.';
+      } finally { loading = false; }
+    }
+
+    $('load-more').addEventListener('click', () => { visibleLimit += 60; loadNotes(); });
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (sending || !configured) return;
+      const message = $('message').value.trim();
+      const color = form.elements.color.value;
+      if (!message) {
+        $('message').setCustomValidity('축하 메시지를 적어주세요.');
+        $('message').reportValidity();
+        return;
+      }
+      if (message.length > 300 || !colors.has(color)) return;
+      sending = true;
+      $('message').readOnly = true;
+      form.querySelector('fieldset').disabled = true;
+      $('submit-note').disabled = true;
+      $('submit-note').textContent = '붙이는 중…';
+      $('form-status').textContent = '';
+      // 응답이 끊긴 뒤 같은 글을 재시도해도 중복 게시되지 않도록 같은 ID를 사용합니다.
+      if (!pendingPost || pendingPost.message !== message || pendingPost.color !== color) {
+        pendingPost = { id: crypto.randomUUID(), message, color };
+      }
+      try {
+        try {
+          await request('', { method: 'POST', headers: { Prefer: 'return=minimal' }, body: JSON.stringify(pendingPost) });
+        } catch (error) {
+          if (error.message !== '409') throw error;
+          const existing = await request(`?id=eq.${pendingPost.id}&select=id`);
+          if (!existing.length) throw error;
+        }
+        pendingPost = null;
+        form.reset();
+        $('draft').dataset.color = 'yellow';
+        $('counter').textContent = '0 / 300';
+        dialog.close();
+        status.textContent = '축하 메시지를 붙였어요!';
+        await loadNotes();
+      } catch {
+        $('form-status').textContent = '저장을 확인하지 못했어요. 적은 내용은 그대로 있으니 다시 눌러주세요.';
+      } finally {
+        sending = false;
+        $('message').readOnly = false;
+        form.querySelector('fieldset').disabled = false;
+        $('submit-note').disabled = false;
+        $('submit-note').textContent = '보드에 붙이기';
+      }
+    });
+
+    if (configured) {
+      status.textContent = '축하 메시지를 불러오는 중…';
+      loadNotes();
+      setInterval(() => { if (!document.hidden) loadNotes(); }, 30000);
+      document.addEventListener('visibilitychange', () => { if (!document.hidden) loadNotes(); });
+    } else {
+      status.textContent = '메시지 보드 준비 중이에요. 색상을 고르고 글을 써볼 수 있지만 아직 게시되지는 않아요.';
+      $('submit-note').disabled = true;
+      $('form-status').textContent = '메시지 저장 연결을 준비 중이에요.';
+    }
+  </script>
+</body>
+</html>
